@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Weekly Workout Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#070606; --coal:#131010; --ash:#241d1d; --line:#352a2a;
+  --red:#d6101a; --red-dim:#7d0a10; --bone:#efe7e4; --mute:#a39a98;
+  --display:"Big Shoulders Display","Impact","Arial Narrow",sans-serif;
+  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--black);color:var(--bone);font-family:var(--body);font-size:17px;line-height:1.5}
+button{font:inherit;color:inherit;border-radius:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+.wrap{max-width:880px;margin:0 auto;padding:28px 20px 64px}
+
+header{border-left:10px solid var(--red);padding:2px 0 2px 18px;margin-bottom:28px}
+header h1{font-family:var(--display);font-weight:900;font-size:clamp(44px,11vw,84px);line-height:.9;margin:0;letter-spacing:.5px}
+header p{margin:10px 0 0;color:var(--mute);max-width:46ch}
+
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);margin-bottom:28px;background:var(--coal)}
+.rules div{padding:14px 16px;border-right:1px solid var(--line)}
+.rules div:last-child{border-right:0}
+.rules b{display:block;font-family:var(--display);font-size:34px;line-height:1;color:var(--red);font-weight:800}
+.rules span{font-size:14px;color:var(--mute)}
+
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border:1px solid var(--line);margin-bottom:0}
+.days button{background:var(--coal);border:0;border-right:1px solid var(--line);padding:12px 4px 10px;text-align:left;padding-left:10px;position:relative;min-height:64px}
+.days button:last-child{border-right:0}
+.days button .d{display:block;font-weight:600;font-size:15px}
+.days button .m{display:block;font-size:12px;color:var(--mute);margin-top:2px}
+.days button:hover{background:var(--ash)}
+.days button[aria-selected="true"]{background:var(--red);color:#fff}
+.days button[aria-selected="true"] .m{color:#ffd9db}
+.days button.today::after{content:"";position:absolute;top:0;right:0;border-top:12px solid var(--red);border-left:12px solid transparent}
+.days button.today[aria-selected="true"]::after{border-top-color:#fff}
+
+.panel{border:1px solid var(--line);border-top:0;background:var(--coal);padding:30px 22px 26px}
+.panel h2{font-family:var(--display);font-weight:900;font-size:clamp(52px,14vw,110px);line-height:.88;margin:0;letter-spacing:.5px}
+.panel .sub{margin:12px 0 26px;color:var(--mute);max-width:52ch}
+
+.ex{display:grid;grid-template-columns:1fr auto;gap:6px 18px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+.ex:last-of-type{border-bottom:1px solid var(--line)}
+.ex h3{margin:0;font-size:20px;font-weight:600;line-height:1.2}
+.ex .note{grid-column:1;color:var(--mute);font-size:14px;margin:0}
+.ex.key h3{color:var(--red)}
+.sets{display:flex;gap:8px;grid-row:1 / span 2;grid-column:2}
+.sets button{width:40px;height:40px;background:transparent;border:2px solid var(--red-dim);font-family:var(--display);font-weight:800;font-size:20px;color:var(--mute);padding:0}
+.sets button:hover{border-color:var(--red)}
+.sets button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.sets button.fail{border-style:dashed}
+
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;color:var(--mute);font-size:14px}
+.reset{background:transparent;border:1px solid var(--line);padding:9px 14px;color:var(--bone)}
+.reset:hover{border-color:var(--red)}
+
+.rest{padding:10px 0 4px;font-size:18px;max-width:46ch}
+
+@media (max-width:640px){
+  .wrap{padding:20px 14px 48px}
+  .days{display:flex;overflow-x:auto;scrollbar-width:none}
+  .days::-webkit-scrollbar{display:none}
+  .days button{flex:0 0 96px}
+  .rules{grid-template-columns:1fr}
+  .rules div{border-right:0;border-bottom:1px solid var(--line)}
+  .rules div:last-child{border-bottom:0}
+  .panel{padding:24px 16px 22px}
+  .ex{grid-template-columns:1fr}
+  .sets{grid-row:auto;grid-column:1;margin-top:6px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .panel h2{animation:cut .5s cubic-bezier(.2,.8,.2,1)}
+  @keyframes cut{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Weekly<br>Split</h1>
+    <p>One muscle group per day, hit from every angle. This is not a push pull split.</p>
+  </header>
+
+  <div class="rules">
+    <div><b>8 to 12</b><span>reps in every set</span></div>
+    <div><b>Failure</b><span>on the last set, every exercise, every day</span></div>
+    <div><b>3 sets</b><span>per exercise unless noted</span></div>
+  </div>
+
+  <div class="days" role="tablist" aria-label="Days of the week" id="tabs"></div>
+  <section class="panel" id="panel" role="tabpanel"></section>
+</div>
+
+<script>
+const PLAN=[
+ {d:"Monday",m:"Legs",title:"Legs",sub:"Heavy compound work first, then isolate the quads and hamstrings.",ex:[
+  {n:"Weighted squats",s:4},
+  {n:"Weighted lunges",s:3,note:"3 sets on each leg"},
+  {n:"Leg extensions",s:3},
+  {n:"Hamstring extensions",s:3}]},
+ {d:"Tuesday",m:"Shoulders",title:"Shoulders",sub:"Front, side and rear delts, finished with bar dips.",ex:[
+  {n:"Shoulder press",s:3},{n:"Front raises",s:3},{n:"Lateral raises",s:3},{n:"Rear delts",s:3},{n:"Bar dips",s:3}]},
+ {d:"Wednesday",m:"Chest",title:"Chest",sub:"Bench press is the strength lift of the week. Give it full effort.",ex:[
+  {n:"Bench press",s:5,key:true,note:"4 to 5 sets. This one matters most for strength."},
+  {n:"Incline dumbbell press",s:3},{n:"Butterfly press",s:3},{n:"Cable push",s:3},{n:"Pushups",s:3}]},
+ {d:"Thursday",m:"Back",title:"Back",sub:"Lats and rows first, then biceps and forearms to finish.",ex:[
+  {n:"Lat pulldown",s:3},{n:"Wide grip rowing",s:3},{n:"Narrow grip lat pulldown",s:3},{n:"Dumbbell back raises",s:3},
+  {n:"Bicep curls",s:3,note:"After the back work"},{n:"Forearm curls",s:3,note:"After the back work"}]},
+ {d:"Friday",m:"Buffer / Upper",title:"Buffer day",sub:"Catch up on anything missed this week. If nothing was missed, run an upper body mix of Tuesday and Wednesday.",
+  group:[
+   {h:"Option A: missed work",ex:[{n:"Do the session you skipped",s:0,note:"Same sets, same rep range"}]},
+   {h:"Option B: upper body mix",ex:[{n:"Shoulder press",s:3},{n:"Lateral raises",s:3},{n:"Bar dips",s:3},{n:"Bench press",s:4},{n:"Incline dumbbell press",s:3},{n:"Cable push",s:3}]}]},
+ {d:"Saturday",m:"Arms",title:"Arms",sub:"Purely arms. Every arm exercise, biceps, triceps and forearms.",ex:[
+  {n:"Bicep curls",s:3},{n:"Triceps work",s:3,note:"Pushdowns, dips, extensions"},{n:"Forearm curls",s:3}]},
+ {d:"Sunday",m:"Off",title:"Rest",sub:"",rest:true}
+];
+
+const KEY="wk-plan-sets-v1";
+let done={};
+try{done=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){done={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
+
+const todayIdx=(new Date().getDay()+6)%7;
+let cur=todayIdx;
+const tabs=document.getElementById("tabs"), panel=document.getElementById("panel");
+
+PLAN.forEach((p,i)=>{
+  const b=document.createElement("button");
+  b.setAttribute("role","tab");
+  b.className=i===todayIdx?"today":"";
+  b.innerHTML='<span class="d">'+p.d.slice(0,3)+'</span><span class="m">'+p.m+'</span>';
+  b.onclick=()=>{cur=i;render()};
+  tabs.appendChild(b);
+});
+
+function exRow(e,di,gi){
+  const id=di+"-"+gi+"-"+e.n;
+  const row=document.createElement("div");
+  row.className="ex"+(e.key?" key":"");
+  row.innerHTML='<h3></h3>'+(e.note?'<p class="note"></p>':'');
+  row.querySelector("h3").textContent=e.n;
+  if(e.note) row.querySelector(".note").textContent=e.note;
+  if(e.s>0){
+    const w=document.createElement("div"); w.className="sets";
+    for(let k=1;k<=e.s;k++){
+      const sb=document.createElement("button");
+      const key=id+"-"+k;
+      sb.textContent=k;
+      if(k===e.s){sb.classList.add("fail");sb.title="Last set: go to failure"}
+      sb.setAttribute("aria-label",e.n+" set "+k+(k===e.s?", to failure":""));
+      sb.setAttribute("aria-pressed",!!done[key]);
+      sb.onclick=()=>{done[key]=!done[key];if(!done[key])delete done[key];save();sb.setAttribute("aria-pressed",!!done[key])};
+      w.appendChild(sb);
+    }
+    row.appendChild(w);
+  }
+  return row;
+}
+
+function render(){
+  [...tabs.children].forEach((b,i)=>b.setAttribute("aria-selected",i===cur));
+  const p=PLAN[cur];
+  panel.innerHTML="";
+  const h=document.createElement("h2"); h.textContent=p.title; panel.appendChild(h);
+  if(p.sub){const s=document.createElement("p");s.className="sub";s.textContent=p.sub;panel.appendChild(s)}
+  if(p.rest){
+    const r=document.createElement("p");r.className="rest";
+    r.textContent="Nothing scheduled. Recover and start Monday fresh.";panel.appendChild(r);return;
+  }
+  if(p.group){
+    p.group.forEach((g,gi)=>{
+      const t=document.createElement("p");t.className="sub";t.style.cssText="margin:22px 0 8px;color:var(--bone);font-weight:600";
+      t.textContent=g.h;panel.appendChild(t);
+      g.ex.forEach(e=>panel.appendChild(exRow(e,cur,gi)));
+    });
+  } else p.ex.forEach(e=>panel.appendChild(exRow(e,cur,0)));
+  const f=document.createElement("div");f.className="foot";
+  f.innerHTML='<span>Tap a set when finished. The dashed box is your failure set.</span>';
+  const rb=document.createElement("button");rb.className="reset";rb.textContent="Clear ticks";
+  rb.onclick=()=>{done={};save();render()};
+  f.appendChild(rb);panel.appendChild(f);
+}
+render();
+</script>
+</body>
+</html>
